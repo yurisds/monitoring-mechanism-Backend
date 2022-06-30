@@ -143,9 +143,10 @@ function get_extract(data) {
 
     extract = {
         ...extract,
-        ...getHoursEventsLogsByDatabase(data)
+        ...getHoursEventsLogsByDatabase(data),
+        percentual_create_alter: (extract.create_table > 0 ? extract.create_table : 0)  / (extract.alter_table > 0 ? extract.alter_table : 1)
     }
-
+    
    return extract;
 }
 
