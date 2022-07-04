@@ -10,38 +10,48 @@ const getEventsLogs = async (
   finalDate,
   event_name
 ) => {
-  const pool = new Pool(credentials);
 
-  let now;
-
-  if (initialDate && finalDate) {
-
+  try {
     
-    if (event_name) {
-      now = await pool.query(
-        `SELECT * from auditTable.tab_event_logs WHERE date_time BETWEEN '${initialDate}' AND '${finalDate}' AND event_name = '${event_name}';`
-      );
-    } else {
-      now = await pool.query(
-        `SELECT * from auditTable.tab_event_logs WHERE date_time BETWEEN '${initialDate}' AND '${finalDate}';`
-      );
-    }
-  } else {
-    if (event_name) {
-      now = await pool.query(
-        `SELECT * from auditTable.tab_event_logs WHERE event_name = '${event_name}';`
-      );
-    } else {
-      now = await pool.query("SELECT * from auditTable.tab_event_logs;");
-    }
-  }
-  
-  await pool.end();
+    const pool = new Pool(credentials);
 
-  return now;
+    let now;
+
+    if (initialDate && finalDate) {
+
+      
+      if (event_name) {
+        now = await pool.query(
+          `SELECT * from auditTable.tab_event_logs WHERE date_time BETWEEN '${initialDate}' AND '${finalDate}' AND event_name = '${event_name}';`
+        );
+      } else {
+        now = await pool.query(
+          `SELECT * from auditTable.tab_event_logs WHERE date_time BETWEEN '${initialDate}' AND '${finalDate}';`
+        );
+      }
+    } else {
+      if (event_name) {
+        now = await pool.query(
+          `SELECT * from auditTable.tab_event_logs WHERE event_name = '${event_name}';`
+        );
+      } else {
+        now = await pool.query("SELECT * from auditTable.tab_event_logs;");
+      }
+    }
+    
+    await pool.end()
+
+    return now;
+
+  } catch (error) {
+    throw new Error(error.message); 
+  }
 };
 
 const getAllEventsLogs = async (initialDate, finalDate, event_name) => {
+
+  try {
+    
   let result = [];
 
   listaux = aux.split(",");
@@ -54,6 +64,8 @@ const getAllEventsLogs = async (initialDate, finalDate, event_name) => {
         database: db,
         password: process.env.DB_PASSWORD,
         port: process.env.DB_PORT,
+        allowExitOnIdle: true,
+        max: 50,
       };
 
       const poolResult = await getEventsLogs(
@@ -71,6 +83,11 @@ const getAllEventsLogs = async (initialDate, finalDate, event_name) => {
   );
 
   return result;
+
+  } catch (error) {
+      console.log("BORA", error)
+      throw new Error(error.message); 
+  }
 };
 
 const getEventsLogsByDatabase = async (

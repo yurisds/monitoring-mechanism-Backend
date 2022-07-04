@@ -9,17 +9,26 @@ const checkDatabaseExist = async (databaseName) => {
         database: process.env.DB_USER_TEST,
         password: process.env.DB_PASSWORD,
         port: process.env.DB_PORT,
+        allowExitOnIdle: true,
+        max: 50,
     };
 
-    const pool = new Pool(credentials);
+    try {
+        
+        const pool = new Pool(credentials);
 
-    const now = await pool.query(`SELECT datname from pg_database where datname = '${databaseName}'; `);
+        const now = await pool.query(`SELECT datname from pg_database where datname = '${databaseName}'; `);
 
-    if (now.rows.length === 0) {
-        return null;
+        if (now.rows.length === 0) {
+            return null;
+        }
+
+        return now;
+
+    } catch (error) {
+        console.log(error);
+        return error;  
     }
-
-    return now;
 }
 
 function countAllOccurrences(sentence, occurrence) {

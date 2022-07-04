@@ -6,19 +6,24 @@ const util = require("../services/util.service");
 
 const getAllStatistics = async (req, res) => {
 
-    const { initialDate, finalDate, event_name } = req.query;
+    try {
+        const { initialDate, finalDate, event_name } = req.query;
 
-    if (initialDate && finalDate) {
-        if(!dayjs(initialDate).isValid() || !dayjs(finalDate).isValid()){
-            return res.status(400).json({ "message": "Incorrect dates" }); 
+        if (initialDate && finalDate) {
+            if(!dayjs(initialDate).isValid() || !dayjs(finalDate).isValid()){
+                return res.status(400).json({ "message": "Incorrect dates" }); 
+            }
         }
+
+        const result = await eventsService.getAllEventsLogs(initialDate, finalDate, event_name);
+
+        const extract = await statisticsService.getAllStatistics(result);
+
+        return res.status(200).json(extract);
+
+    } catch (error) {
+        return res.status(500).json({ error: `Ocorreu um erro: ${error.message}` });  
     }
-
-    const result = await eventsService.getAllEventsLogs(initialDate, finalDate, event_name);
-
-    const extract = await statisticsService.getAllStatistics(result);
-
-    return res.status(200).json(extract);
 
 }
 
