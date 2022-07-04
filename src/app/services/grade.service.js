@@ -8,7 +8,10 @@ const getAllGrade = async () => {
         const doc = new GoogleSpreadsheet(process.env.Spreadsheet_id);
         await doc.useServiceAccountAuth({
         client_email: process.env.client_email,
-        private_key: process.env.private_key,
+        private_key: process.env.private_key.replace(
+            new RegExp('\\\\n', 'g'),
+            '\n',
+          ),
         });
     
         await doc.loadInfo()
@@ -47,7 +50,7 @@ const getAllGrade = async () => {
 
 const getGradeByUser = async (dbUser) => {
     try {
-        
+
         const rows = await getAllGrade();
         return rows[dbUser];
 
