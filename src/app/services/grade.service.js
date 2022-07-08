@@ -17,9 +17,8 @@ const getAllGrade = async () => {
         await doc.loadInfo()
 
         const sheet = doc.sheetsByIndex[0]; 
-        
-        const rows = await sheet.getRows();
 
+        const rows = await sheet.getRows();
         let array = {};
 
         rows.map( (row) => {
@@ -40,7 +39,7 @@ const getAllGrade = async () => {
 
         })
 
-        return array;
+        return Object.values(array);
 
     } catch (error) {
         throw new Error(error.message);
