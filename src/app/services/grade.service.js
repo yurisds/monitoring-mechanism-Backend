@@ -39,19 +39,8 @@ const getAllGrade = async () => {
 
         })
 
-        let arr = Object.values(array);
 
-        arr.sort( (a, b) => {
-            if (a.nome > b.nome) {
-                return 1;
-              }
-              if (a.nome < b.nome) {
-                return -1;
-              }
-              return 0; 
-        })
-
-        return arr;
+        return array;
 
     } catch (error) {
         throw new Error(error.message);
