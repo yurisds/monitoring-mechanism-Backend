@@ -5,7 +5,11 @@ const util = require("../services/util.service");
 
 const getHoursIntervalsByDatabase = async (req, res) => {
 
-    const { databaseName } = req.params;
+    let { databaseName } = req.params;
+
+    const dbHashs = await util.getTableHashs();
+
+    databaseName = util.changeHashToDbName(databaseName, dbHashs);
 
     const { initialDate, finalDate, event_name } = req.query;
 
@@ -21,11 +25,14 @@ const getHoursIntervalsByDatabase = async (req, res) => {
         return res.status(400).json({ "message": "Database not exist" });
     }
 
-    const result = await resultQuery.getHoursEventsLogsByDatabase(databaseName, initialDate, finalDate, event_name);
+    let result = await resultQuery.getHoursEventsLogsByDatabase(databaseName, initialDate, finalDate, event_name);
 
     if (!result) {
         return res.status(400).json({ "message": "Database already exists" });
     }
+
+    
+    result['database'] = util.changeDbNameToHash(databaseName, dbHashs);
 
     const array = result.array;
     const set = new Set(array);

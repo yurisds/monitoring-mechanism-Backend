@@ -24,6 +24,8 @@ const generateAllDataCSV = async (req, res) => {
 
         const grade = await GradeService.getAllGrade();
 
+        const dbHashs = await util.getTableHashs();
+
         const extractResult = extract.map((e) => {
 
             if(grade[e.db_name]) {
@@ -31,6 +33,11 @@ const generateAllDataCSV = async (req, res) => {
                     ...e,
                     ...grade[e.db_name]
                 }
+
+                const dbHash =  util.changeDbNameToHash(e.db_name, dbHashs);
+                e['db_name'] = dbHash;
+                e['bd'] = dbHash;
+                e['nome'] = "CENSURED";
             }
 
             return e;

@@ -85,7 +85,6 @@ const getAllEventsLogs = async (initialDate, finalDate, event_name) => {
   return result;
 
   } catch (error) {
-      console.log("BORA", error)
       throw new Error(error.message); 
   }
 };

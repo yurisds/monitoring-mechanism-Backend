@@ -22,7 +22,19 @@ const getAllStatistics = async (req, res) => {
 
         const extract = await statisticsService.getAllStatistics(result);
 
-        return res.status(200).json(extract);
+        const dbHashs = await util.getTableHashs();
+
+        resultExtract = [];
+
+        extract.map( (e) => {
+
+            e.db_name = util.changeDbNameToHash(e.db_name, dbHashs)
+
+            resultExtract.push(e)
+
+        })
+
+        return res.status(200).json(resultExtract);
 
     } catch (error) {
         return res.status(500).json({ error: `Ocorreu um erro: ${error.message}` });  
@@ -45,10 +57,22 @@ const generateAllStatisticsCSV = async (req, res) => {
 
         const extract = await statisticsService.getAllStatistics(result);
 
+        const dbHashs = await util.getTableHashs();
+
+        resultExtract = [];
+
+        extract.map( (e) => {
+
+            e.db_name = util.changeDbNameToHash(e.db_name, dbHashs);
+
+            resultExtract.push(e)
+
+        })
+
         let header = []
 
-        if(extract.length > 0) {
-            Object.keys(extract[0]).forEach(element => {
+        if(resultExtract.length > 0) {
+            Object.keys(resultExtract[0]).forEach(element => {
                 header.push( {id: element, title: element })
             });
         }
@@ -59,11 +83,11 @@ const generateAllStatisticsCSV = async (req, res) => {
             header: header
           });
 
-        const writeFilePromisificado = await writer.writeRecords(extract);
+        const writeFilePromisificado = await writer.writeRecords(resultExtract);
         
         await writeFilePromisificado
 
-        return res.status(200).json(extract);
+        return res.status(200).json(resultExtract);
 
     } catch (error) {
         return res.status(500).json({ error: `Ocorreu um erro: ${error.message}` });  
@@ -73,7 +97,11 @@ const generateAllStatisticsCSV = async (req, res) => {
 
 const getStatisticsByDatabase = async (req, res) => {
 
-    const { databaseName } = req.params;
+    let { databaseName } = req.params;
+
+    const dbHashs = await util.getTableHashs();
+
+    databaseName = util.changeHashToDbName(databaseName, dbHashs);
 
     const { initialDate, finalDate, event_name } = req.query;
 
@@ -95,7 +123,9 @@ const getStatisticsByDatabase = async (req, res) => {
         return res.status(400).json({ "message": "Database already exists" });
     }
 
-    const extract = await statisticsService.getStatisticsByDatabase(result);
+    let extract = await statisticsService.getStatisticsByDatabase(result);
+
+    extract['db_name'] = util.changeDbNameToHash(databaseName, dbHashs);
 
     return res.status(200).json(extract);
 
