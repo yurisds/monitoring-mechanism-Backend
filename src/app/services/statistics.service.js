@@ -158,16 +158,6 @@ const getAllStatistics = async (data) => {
         allDatabases.push(get_extract(file));
     })
 
-    allDatabases.sort( (a, b) => {
-        if (a.db_name > b.db_name) {
-            return 1;
-          }
-          if (a.db_name < b.db_name) {
-            return -1;
-          }
-          return 0; 
-    })
-
     return allDatabases;
 };
 
