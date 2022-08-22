@@ -114,13 +114,22 @@ const getEventsLogsByDatabase = async (
 
   await poolResult.rows.map((row) => {
     if (
-      row.event_name !== "CREATE TRIGGER" &&
-      row.event_name !== "CREATE FUNCTION" &&
-      row.event_name !== "DROP FUNCTION" &&
-      row.event_name !== "GRANT"
+      row.event_name.toUpperCase() !== "CREATE TRIGGER" &&
+      row.event_name.toUpperCase() !== "CREATE FUNCTION" &&
+      row.event_name.toUpperCase() !== "DROP FUNCTION" &&
+      row.event_name.toUpperCase() !== "GRANT"
     ) {
+      
+      if (row.event_name.toUpperCase() === "DROP TABLE") {
+
+        row.current_query.toUpperCase().includes("DROP OWNED") ? row.current_query = 'DROP OWNED BY CURRENT_USER;': row.current_query;
+      }
+
       array.push(row);
+      
+
     }
+
   });
 
   const result = {
